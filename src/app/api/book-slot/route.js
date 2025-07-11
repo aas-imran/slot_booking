@@ -43,7 +43,7 @@ export async function POST(req) {
     const tenantId = process.env.AZURE_TENANT_ID;
     const clientId = process.env.AZURE_CLIENT_ID;
     const clientSecret = process.env.AZURE_CLIENT_SECRET;
-    const sender = "imran@aas.technology"; // The mailbox to send from
+    const sender = "admin@aas.technology"; // The mailbox to send from
 
     const credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
     const token = await credential.getToken("https://graph.microsoft.com/.default");
