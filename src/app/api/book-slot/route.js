@@ -15,7 +15,8 @@ export async function POST(req) {
       !["IT", "Mines and minerals", "Management", "BioInformatices"].includes(data.departmentName) ||
       !data.startDate ||
       !data.endDate ||
-      !data.time ||
+      !data.startTime ||
+      !data.endTime ||
       !regex.text.test(data.purpose) ||
       !regex.desc.test(data.description) ||
       !regex.email.test(data.email)
@@ -42,7 +43,7 @@ export async function POST(req) {
     const tenantId = process.env.AZURE_TENANT_ID;
     const clientId = process.env.AZURE_CLIENT_ID;
     const clientSecret = process.env.AZURE_CLIENT_SECRET;
-    const sender = "admin@aas.technology"; // The mailbox to send from
+    const sender = "imran@aas.technology"; // The mailbox to send from
 
     const credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
     const token = await credential.getToken("https://graph.microsoft.com/.default");
@@ -51,6 +52,33 @@ export async function POST(req) {
         done(null, token.token);
       },
     });
+
+    // Helper to calculate duration between two times (can cross midnight)
+    function getSlotDuration(start, end) {
+      if (!start || !end) return null;
+      const [sh, sm, sap] = start.match(/(\d{2}):(\d{2})\s?(AM|PM)/i).slice(1);
+      const [eh, em, eap] = end.match(/(\d{2}):(\d{2})\s?(AM|PM)/i).slice(1);
+      let sHour = parseInt(sh, 10) % 12 + (sap === "PM" ? 12 : 0);
+      let sMin = parseInt(sm, 10);
+      let eHour = parseInt(eh, 10) % 12 + (eap === "PM" ? 12 : 0);
+      let eMin = parseInt(em, 10);
+      let startMins = sHour * 60 + sMin;
+      let endMins = eHour * 60 + eMin;
+      if (endMins <= startMins) endMins += 24 * 60;
+      let diff = endMins - startMins;
+      if (diff < 0) return null;
+      const hours = Math.floor(diff / 60);
+      const mins = diff % 60;
+      return { hours, mins };
+    }
+    function formatSlotDuration(start, end) {
+      const dur = getSlotDuration(start, end);
+      if (!dur) return "-";
+      let str = "";
+      if (dur.hours > 0) str += `<b>${dur.hours} hour${dur.hours > 1 ? 's' : ''}</b> `;
+      if (dur.mins > 0) str += `<b>${dur.mins} minute${dur.mins > 1 ? 's' : ''}</b>`;
+      return str.trim();
+    }
 
     // Build your email message
     const mail = {
@@ -71,7 +99,8 @@ export async function POST(req) {
                   <tr><td style="font-weight:600;color:#555;white-space:nowrap;">Department Name:</td><td style="color:#222;">${data.departmentName}</td></tr>
                   <tr><td style="font-weight:600;color:#555;white-space:nowrap;">Start Date:</td><td style="color:#222;">${data.startDate}</td></tr>
                   <tr><td style="font-weight:600;color:#555;white-space:nowrap;">End Date:</td><td style="color:#222;">${data.endDate}</td></tr>
-                  <tr><td style="font-weight:600;color:#555;white-space:nowrap;">Time:</td><td style="color:#222;">${data.time}</td></tr>
+                  <tr><td style="font-weight:600;color:#555;white-space:nowrap;">Time:</td><td style="color:#222;">${data.startTime} - ${data.endTime}</td></tr>
+                  <tr><td style="font-weight:600;color:#555;white-space:nowrap;">Total Duration:</td><td style="color:#222;">${formatSlotDuration(data.startTime, data.endTime)}</td></tr>
                   <tr><td style="font-weight:600;color:#555;white-space:nowrap;">Purpose:</td><td style="color:#222;">${data.purpose}</td></tr>
                   <tr>
                     <td style="font-weight:600;color:#555;white-space:nowrap;">Description:</td>
