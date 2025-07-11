@@ -1,0 +1,10 @@
+# Copy this file to .env.local and fill in your actual Outlook password
+# Microsoft Outlook SMTP Configuration
+SMTP_USER=imran@aas.technology
+SMTP_PASS=your_outlook_password_here
+
+# Instructions:
+# 1. Rename this file to .env.local
+# 2. Replace "your_outlook_password_here" with your actual Outlook password
+# 3. If you're using an app password (recommended), use that instead of your regular password
+# 4. Make sure to enable "Less secure app access" or use an app password in your Outlook account settings 
