@@ -23,6 +23,11 @@ export async function POST(req) {
       return new Response(JSON.stringify({ error: "Invalid input." }), { status: 400 });
     }
 
+    const wordCount = data.description.trim().split(/\s+/).length;
+    if (wordCount > 100) {
+      return new Response(JSON.stringify({ error: "Description must be 100 words or fewer." }), { status: 400 });
+    }
+
     // SVG icons (inline for email compatibility)
     const icons = {
       project: `<svg width='20' height='20' fill='none' stroke='#a259f7' stroke-width='2' viewBox='0 0 24 24' style='vertical-align:middle;'><rect x='3' y='7' width='18' height='13' rx='2'/><path d='M16 3v4M8 3v4M3 11h18'/></svg>`,
@@ -37,7 +42,7 @@ export async function POST(req) {
     const tenantId = process.env.AZURE_TENANT_ID;
     const clientId = process.env.AZURE_CLIENT_ID;
     const clientSecret = process.env.AZURE_CLIENT_SECRET;
-    const sender = "admin@aas.technology"; // The mailbox to send from
+    const sender = "imran@aas.technology"; // The mailbox to send from
 
     const credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
     const token = await credential.getToken("https://graph.microsoft.com/.default");
@@ -55,26 +60,28 @@ export async function POST(req) {
           contentType: "HTML",
           content: `
             <div style="max-width:420px;margin:24px auto;padding:0;font-family:Arial,sans-serif;background:#fff;border-radius:18px;box-shadow:0 4px 24px #0001;overflow:hidden;border:2px dashed #7d92a7;">
-              <div style="background:linear-gradient(90deg,#7d92a7 0%,#586364 100%);color:#fff;padding:18px 0;text-align:center;font-size:1.3rem;font-weight:bold;letter-spacing:1px;position:relative;">
-                <span style='color:#d1c061;'>🎟️ Time Slot Book</span>
-                <span style="position:absolute;left:0;top:0;width:32px;height:32px;background:#fff;border-radius:0 0 18px 0;"></span>
-                <span style="position:absolute;right:0;top:0;width:32px;height:32px;background:#fff;border-radius:0 0 0 18px;"></span>
+              <div style="background:#7d92a7;color:#fff;padding:18px 0;text-align:center;font-size:1.3rem;font-weight:bold;letter-spacing:1px;border-radius:14px 14px 0 0;">
+                <span style="font-size:1.5rem;">🎟️</span>
+                <span style="margin-left:8px;">Time Slot Book</span>
               </div>
               <div style="padding:24px 24px 12px 24px;">
                 <div style="margin-bottom:12px;font-size:1.1rem;font-weight:600;text-align:center;color:#d1c061;">Slot Booking Request</div>
-                <ul style="list-style:none;padding:0;margin:0;font-size:1rem;">
-                  <li style="margin-bottom:10px;">${icons.project} <b style='margin-left:4px;'>Project Name:</b> ${data.projectName}</li>
-                  <li style="margin-bottom:10px;">${icons.department} <b style='margin-left:4px;'>Department Name:</b> ${data.departmentName}</li>
-                  <li style="margin-bottom:10px;">${icons.date} <b style='margin-left:4px;'>Start Date:</b> ${data.startDate}</li>
-                  <li style="margin-bottom:10px;">${icons.date} <b style='margin-left:4px;'>End Date:</b> ${data.endDate}</li>
-                  <li style="margin-bottom:10px;">${icons.time} <b style='margin-left:4px;'>Time:</b> ${data.time}</li>
-                  <li style="margin-bottom:10px;">${icons.purpose} <b style='margin-left:4px;'>Purpose:</b> ${data.purpose}</li>
-                  <li style="margin-bottom:10px;">${icons.description} <b style='margin-left:4px;'>Description:</b> ${data.description}</li>
-                  <li style="margin-bottom:10px;">📧 <b style='margin-left:4px;'>From Email:</b> ${data.email}</li>
-                </ul>
+                <table style="width:100%;border-collapse:separate;border-spacing:0 10px;">
+                  <tr><td style="font-weight:600;color:#555;white-space:nowrap;">Project Name:</td><td style="color:#222;">${data.projectName}</td></tr>
+                  <tr><td style="font-weight:600;color:#555;white-space:nowrap;">Department Name:</td><td style="color:#222;">${data.departmentName}</td></tr>
+                  <tr><td style="font-weight:600;color:#555;white-space:nowrap;">Start Date:</td><td style="color:#222;">${data.startDate}</td></tr>
+                  <tr><td style="font-weight:600;color:#555;white-space:nowrap;">End Date:</td><td style="color:#222;">${data.endDate}</td></tr>
+                  <tr><td style="font-weight:600;color:#555;white-space:nowrap;">Time:</td><td style="color:#222;">${data.time}</td></tr>
+                  <tr><td style="font-weight:600;color:#555;white-space:nowrap;">Purpose:</td><td style="color:#222;">${data.purpose}</td></tr>
+                  <tr>
+                    <td style="font-weight:600;color:#555;white-space:nowrap;">Description:</td>
+                    <td style="color:#222;word-break:break-word;white-space:pre-line;">${data.description}</td>
+                  </tr>
+                  <tr><td style="font-weight:600;color:#555;white-space:nowrap;">📧 From Email:</td><td style="color:#222;">${data.email}</td></tr>
+                </table>
                 <div style="margin-top:18px;text-align:center;font-size:1.05rem;color:#333;">A user has requested to book a time slot to meet you.<br/>Please review the details above and confirm the meeting if appropriate.<br/><br/><span style='font-size:0.95rem;color:#7d92a7;'>This digital ticket is for your reference as the meeting recipient.</span></div>
               </div>
-              <div style="background:#d1c061;color:#fff;text-align:center;padding:10px 0;font-size:1rem;font-weight:600;letter-spacing:1px;">Powered by AAS Information Technology</div>
+              <div style="background:#d1c061;color:#fff;text-align:center;padding:10px 0;font-size:1rem;font-weight:600;letter-spacing:1px;border-radius:0 0 14px 14px;">Powered by AAS Information Technology</div>
             </div>
           `,
         },

@@ -125,6 +125,11 @@ export default function Home() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === "description") {
+      // Limit to 100 words
+      const words = value.trim().split(/\s+/);
+      if (words.length > 100) return;
+    }
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -582,41 +587,60 @@ export default function Home() {
                 </div>
               </form>
             ) : (
-              <div className="flex flex-col items-center gap-6 w-full max-w-xl">
-                <div
-                  ref={ticketRef}
-                  className="bg-white rounded-xl shadow-lg p-6 w-full border-2 border-green-600 relative"
-                  style={{ color: "#111" }}
-                >
-                  <h2 className="text-xl font-bold mb-2 text-green-600">Your Slot Booking Successful !</h2>
-                  {/* Booking number below heading */}
-                  {ticket && (
-                    <div className="mb-2 text-xs font-bold text-green-700 bg-green-100 px-3 py-1 rounded shadow inline-block">
-                      <span className="font-semibold">Booking No:</span> {getBookingNumber(ticket.date, ticket.time)}
-                    </div>
-                  )}
-                  <div className="mt-2 text-sm text-gray-800 space-y-1">
-                    <div className="flex"><span className="font-semibold min-w-[110px]">Project:</span><span className="ml-2">{ticket.projectName}</span></div>
-                    <div className="flex"><span className="font-semibold min-w-[110px]">Department:</span><span className="ml-2">{ticket.departmentName}</span></div>
-                    <div className="flex"><span className="font-semibold min-w-[110px]">Start Date:</span><span className="ml-2">{ticket.startDate}</span></div>
-                    <div className="flex"><span className="font-semibold min-w-[110px]">End Date:</span><span className="ml-2">{ticket.endDate}</span></div>
-                    <div className="flex"><span className="font-semibold min-w-[110px]">Time:</span><span className="ml-2">{ticket.time}</span></div>
-                    <div className="flex"><span className="font-semibold min-w-[110px]">Purpose:</span><span className="ml-2">{ticket.purpose}</span></div>
-                    <div className="flex"><span className="font-semibold min-w-[110px]">Description:</span><span className="ml-2">{ticket.description}</span></div>
-                    <div className="flex"><span className="font-semibold min-w-[110px]">Email:</span><span className="ml-2">{ticket.email}</span></div>
+              <div className="max-w-md mx-auto bg-white rounded-2xl shadow-lg border border-green-200 p-6 mt-8">
+                <div className="flex flex-col items-center mb-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-600 text-2xl">✔️</span>
+                    <h2 className="text-xl font-bold text-green-700">Slot Booking Successful!</h2>
                   </div>
-                  <div className="absolute top-2 right-2">
-                    <Image src="/file.svg" alt="Ticket" width={24} height={24} />
+                  <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold shadow mb-2">Booking No: <span className="font-mono">{getBookingNumber(ticket.startDate, ticket.time)}</span></span>
+                </div>
+                <div className="divide-y divide-gray-100">
+                  <div className="py-2 flex justify-between">
+                    <span className="font-semibold text-gray-500">Project:</span>
+                    <span className="text-gray-900">{ticket.projectName}</span>
+                  </div>
+                  <div className="py-2 flex justify-between">
+                    <span className="font-semibold text-gray-500">Department:</span>
+                    <span className="text-gray-900">{ticket.departmentName}</span>
+                  </div>
+                  <div className="py-2 flex justify-between">
+                    <span className="font-semibold text-gray-500">Start Date:</span>
+                    <span className="text-gray-900">{ticket.startDate}</span>
+                  </div>
+                  <div className="py-2 flex justify-between">
+                    <span className="font-semibold text-gray-500">End Date:</span>
+                    <span className="text-gray-900">{ticket.endDate}</span>
+                  </div>
+                  <div className="py-2 flex justify-between">
+                    <span className="font-semibold text-gray-500">Time:</span>
+                    <span className="text-gray-900">{ticket.time}</span>
+                  </div>
+                  <div className="py-2 flex justify-between">
+                    <span className="font-semibold text-gray-500">Purpose:</span>
+                    <span className="text-gray-900">{ticket.purpose}</span>
+                  </div>
+                  <div className="py-2 flex justify-between">
+                    <span className="font-semibold text-gray-500">Description:</span>
+                    <span
+                      className="text-gray-900"
+                      style={{ wordBreak: "break-word", whiteSpace: "pre-line" }}
+                    >
+                      {ticket.description}
+                    </span>
+                  </div>
+                  <div className="py-2 flex justify-between">
+                    <span className="font-semibold text-gray-500">Email:</span>
+                    <span className="text-gray-900">{ticket.email}</span>
                   </div>
                 </div>
-                <div className="flex flex-row gap-4 justify-center w-full">
+                <div className="flex flex-row gap-4 justify-center w-full mt-6">
                   <button
                     onClick={() => handleSaveTicket(true)}
                     className="bg-gradient-to-r from-[#7d92a7] to-[#586364] hover:from-gray-900 hover:to-gray-700 text-white font-semibold py-2 px-4 rounded transition-colors mt-2"
                   >
                     Download as PDF
                   </button>
-                  {/* Back button */}
                   <button
                     onClick={handleBackToForm}
                     className="bg-gradient-to-r from-[#7d92a7] to-[#586364] hover:from-gray-900 hover:to-gray-700 text-white font-semibold py-2 px-4 rounded transition-colors mt-2"
@@ -625,7 +649,7 @@ export default function Home() {
                     Back
                   </button>
                 </div>
-                {saved && <div className="mt-2 text-green-600 font-semibold">Ticket saved to your device!</div>}
+                {saved && <div className="mt-2 text-green-600 font-semibold text-center">Ticket saved to your device!</div>}
               </div>
             )}
           </div>
@@ -657,7 +681,12 @@ export default function Home() {
                         <div className="text-sm text-black flex"><span className="font-semibold min-w-[110px]">End Date:</span><span className="ml-2">{b.endDate}</span></div>
                         <div className="text-sm text-black flex"><span className="font-semibold min-w-[110px]">Time slot:</span><span className="ml-2">{b.time}</span></div>
                         <div className="text-sm text-black flex"><span className="font-semibold min-w-[110px]">Purpose:</span><span className="ml-2">{b.purpose}</span></div>
-                        <div className="text-sm text-black flex"><span className="font-semibold min-w-[110px]">Description:</span><span className="ml-2">{b.description}</span></div>
+                        <div className="text-sm text-black flex"><span className="font-semibold min-w-[110px]">Description:</span><span
+                          className="text-gray-900"
+                          style={{ wordBreak: "break-word", whiteSpace: "pre-line" }}
+                        >
+                          {b.description}
+                        </span></div>
                         <div className="text-sm text-black flex"><span className="font-semibold min-w-[110px]">Email:</span><span className="ml-2">{b.email}</span></div>
                       </li>
                     ))}
@@ -668,61 +697,6 @@ export default function Home() {
           )}
         </div>
       </div>
-      {/* Add global style for weekday header coloring */}
-      <style jsx global>{`
-        .rdp-weekday:nth-child(1) { color: #16a34a; font-weight: 600; } /* Sun - green-600 */
-        .rdp-weekday:nth-child(2) { color: #2563eb; font-weight: 600; } /* Mon - blue-600 */
-        .rdp-weekday:nth-child(3) { color: #f59e42; font-weight: 600; } /* Tue - orange-500 */
-        .rdp-weekday:nth-child(4) { color: #ca8a04; font-weight: 600; } /* Wed - yellow-600 */
-        .rdp-weekday:nth-child(5) { color: #db2777; font-weight: 600; } /* Thu - pink-500 */
-        .rdp-weekday:nth-child(6) { color: #b45309; font-weight: 600; } /* Fri - amber-700 */
-        .rdp-weekday:nth-child(7) { color: #7c3aed; font-weight: 600; } /* Sat - purple-600 */
-        /* Minimal thin scrollbar for modal */
-        .custom-scrollbar {
-          scrollbar-width: thin;
-          scrollbar-color: #7d92a7 #f3f3f3;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: linear-gradient(to bottom, #7d92a7, #586364);
-          border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: linear-gradient(to bottom, #14532d, #111);
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #f3f3f3;
-        }
-        /* Custom dropdown styling */
-        select option {
-          padding: 8px 12px;
-          margin: 2px 0;
-          border-radius: 8px;
-          transition: all 0.3s ease;
-        }
-        select option:hover {
-          background: linear-gradient(90deg, #7d92a7 0%, #586364 100%);
-          color: white;
-        }
-        select:focus option:checked {
-          background: linear-gradient(90deg, #7d92a7 0%, #586364 100%);
-          color: white;
-        }
-      `}</style>
-      <style jsx global>{`
-        input::placeholder, textarea::placeholder {
-          color: #a3a3a3 !important;
-          opacity: 1;
-        }
-        select option {
-          color: #111;
-        }
-        select option[value=""] {
-          color: #a3a3a3;
-        }
-      `}</style>
     </div>
   );
 }

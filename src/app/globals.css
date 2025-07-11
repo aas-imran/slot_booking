@@ -24,3 +24,117 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Confirmation card and ticket border styles */
+.ticket-border {
+  position: relative;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px #0001;
+  border: 2px dashed #7d92a7;
+  background: #fff;
+}
+.ticket-border::before,
+.ticket-border::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  height: 20px;
+  width: 100%;
+  background: transparent;
+  z-index: 2;
+}
+.ticket-border::before {
+  top: -10px;
+  background:
+    radial-gradient(circle at 20px 10px, #bbf7d0 10px, transparent 11px),
+    radial-gradient(circle at calc(100% - 20px) 10px, #bbf7d0 10px, transparent 11px);
+  background-repeat: no-repeat;
+  background-size: 40px 20px;
+}
+.ticket-border::after {
+  bottom: -10px;
+  background:
+    radial-gradient(circle at 20px 10px, #bbf7d0 10px, transparent 11px),
+    radial-gradient(circle at calc(100% - 20px) 10px, #bbf7d0 10px, transparent 11px);
+  background-repeat: no-repeat;
+  background-size: 40px 20px;
+}
+.ticket-border .ticket-side {
+  position: absolute;
+  top: 20px; bottom: 20px;
+  width: 20px; height: calc(100% - 40px);
+  z-index: 2;
+  pointer-events: none;
+}
+.ticket-border .ticket-side.left {
+  left: -10px;
+  background:
+    radial-gradient(circle at 10px 20px, #bbf7d0 10px, transparent 11px),
+    radial-gradient(circle at 10px calc(100% - 20px), #bbf7d0 10px, transparent 11px);
+  background-repeat: no-repeat;
+  background-size: 20px 40px;
+}
+.ticket-border .ticket-side.right {
+  right: -10px;
+  background:
+    radial-gradient(circle at 10px 20px, #bbf7d0 10px, transparent 11px),
+    radial-gradient(circle at 10px calc(100% - 20px), #bbf7d0 10px, transparent 11px);
+  background-repeat: no-repeat;
+  background-size: 20px 40px;
+}
+
+/* Placeholder and select styling */
+input::placeholder, textarea::placeholder {
+  color: #a3a3a3 !important;
+  opacity: 1;
+}
+select option {
+  color: #111;
+}
+select option[value=""] {
+  color: #a3a3a3;
+}
+
+/* Custom dropdown styling */
+select option {
+  padding: 8px 12px;
+  margin: 2px 0;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+select option:hover {
+  background: linear-gradient(90deg, #7d92a7 0%, #586364 100%);
+  color: white;
+}
+select:focus option:checked {
+  background: linear-gradient(90deg, #7d92a7 0%, #586364 100%);
+  color: white;
+}
+
+/* Scrollbar for modal */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #7d92a7 #f3f3f3;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #7d92a7, #586364);
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #14532d, #111);
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f3f3f3;
+}
+
+/* DayPicker weekday header coloring */
+.rdp-weekday:nth-child(1) { color: #16a34a; font-weight: 600; }
+.rdp-weekday:nth-child(2) { color: #2563eb; font-weight: 600; }
+.rdp-weekday:nth-child(3) { color: #f59e42; font-weight: 600; }
+.rdp-weekday:nth-child(4) { color: #ca8a04; font-weight: 600; }
+.rdp-weekday:nth-child(5) { color: #db2777; font-weight: 600; }
+.rdp-weekday:nth-child(6) { color: #b45309; font-weight: 600; }
+.rdp-weekday:nth-child(7) { color: #7c3aed; font-weight: 600; }
